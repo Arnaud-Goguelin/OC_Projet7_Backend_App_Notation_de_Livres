@@ -8,7 +8,7 @@ const app = express();
 const authRoutes = require('./routes/authRoutes');
 const booksRoutes = require('./routes/booksRoutes');
 
-mongoose.connect('mongodb+srv://OCRUser1:n2kgutfbjapDGVbx@gofullstackdatabase.vtpxx1c.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect('[...]',
 	{
 		useNewUrlParser: true,
 		useUnifiedTopology: true
