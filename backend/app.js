@@ -8,7 +8,7 @@ const app = express();
 const authRoutes = require('./routes/authRoutes');
 const booksRoutes = require('./routes/booksRoutes');
 
-mongoose.connect('[...]',
+mongoose.connect('no database logins hear',
 	{
 		useNewUrlParser: true,
 		useUnifiedTopology: true
