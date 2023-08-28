@@ -1,5 +1,4 @@
 const http = require('http');
-const NodeJS = require('NodeJS');
 const app = require('./app');
 
 const normalizePort = val => {
@@ -11,7 +10,7 @@ const normalizePort = val => {
 	return false;
 };
 
-const port = normalizePort(NodeJS.process.env.PORT ||'3000');
+const port = normalizePort(process.env.PORT ||'4000');
 app.set('port', port);
 
 const errorHandler = error => {
@@ -23,11 +22,11 @@ const errorHandler = error => {
 	switch (error.code) {
 	case 'EACCES':
 		console.error(bind + ' requires elevated privileges.');
-		NodeJS.process.exit(1);
+		process.exit(1);
 		break;
 	case 'EADDRINUSE':
 		console.error(bind + ' is already in use.');
-		NodeJS.process.exit(1);
+		process.exit(1);
 		break;
 	default:
 		throw error;

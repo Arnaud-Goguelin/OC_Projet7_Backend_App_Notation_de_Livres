@@ -13,9 +13,9 @@ router.get('/bestrating', booksController.getThreeBestBooks);
 
 router.post('/', auth, multer, booksController.postOneBook);
 
-router.post('/:id/rating', auth, booksController.gradeOneBook);
+// router.post('/:id/rating', auth, booksController.gradeOneBook);
 
-router.put('/:id', auth, multer, booksController.updateOneBook);
+// router.put('/:id', auth, multer, booksController.updateOneBook);
 
 router.delete('/:id', auth, booksController.deleteOneBook);
 
