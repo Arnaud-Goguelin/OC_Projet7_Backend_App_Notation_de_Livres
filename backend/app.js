@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-// const path = require('path');
+const path = require('path');
 
 // const bodyParder = require('body-parser');
 const app = express();
@@ -8,7 +8,7 @@ const app = express();
 const authRoutes = require('./routes/authRoutes');
 const booksRoutes = require('./routes/booksRoutes');
 
-mongoose.connect('mongodb+srv://OCRP7User1:qR1iGSQOBpcSHvFt@ocrp7database.to9hjtb.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(`mongodb+srv://${process.env.DBLOGIN}:${process.env.DBPASSWORD}@ocrp7database.to9hjtb.mongodb.net/?retryWrites=true&w=majority`,
 	{
 		useNewUrlParser: true,
 		useUnifiedTopology: true
@@ -31,7 +31,6 @@ app.use((req, res, next) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/books', booksRoutes);
-// app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/imagesReceived', express.static(path.join(__dirname, 'imagesReceived')));
 
 module.exports = app;
-

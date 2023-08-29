@@ -8,6 +8,8 @@ const MIME_TYPE = {
 	'image/avif': 'avif'
 };
 
+// faire une condition si le corps de la requête est une string ou au format JSON
+
 const storage = multer.diskStorage({
 	destination: function (req, file, callback) {
 		callback(null, './imagesReceived');

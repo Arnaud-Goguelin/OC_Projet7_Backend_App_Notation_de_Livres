@@ -5,7 +5,7 @@ exports.getAllBooks = async (req, res) => {
 	try {
 		const books = await Book.find();
 		console.log('getAllBooks OK');
-		console.log(books);
+		// console.log(books);
 		return res.status(200).json(books);
 	} catch (error) {
 		return res.status(400).json({ error });
@@ -14,11 +14,11 @@ exports.getAllBooks = async (req, res) => {
 
 exports.getOneBook = async (req, res) => {
 	try {
-		const book = Book.findOne({_id: `new ObjectId("${req.params.id}")`});
+		const book = await Book.findOne({ _id: req.params.id });
+		// console.log(req.params.id);
+		console.log('getOneBook OK');
 		// console.log(book);
-		console.log(req.params.id);
-		// console.log('getOneBook OK');
-		return res.status(200).json({ book });
+		return res.status(200).json( book );
 	} catch (error) {
 		return res.status(400).json({ error });
 	}
@@ -27,10 +27,12 @@ exports.getOneBook = async (req, res) => {
 exports.getThreeBestBooks = async (req, res) => {
 	try {
 		const books = await Book.find();
+		console.log('getThreeBestBooks OK');
+		console.log(books);
 		const threeBestBooks = books
 			.sort( n => books[n+1].averageRating - books[n].averageRating )
 			.slice(0,3);
-		return res.status(200).json({ threeBestBooks });
+		return res.status(200).json( threeBestBooks );
 	} catch (error) {
 		return res.status(400).json({ error });
 	}
@@ -42,6 +44,7 @@ exports.postOneBook = async (req, res) => {
 		// Pas besoin de supprimer les id, il n'y en a pas dans le corps de la requête
 		// delete bookReceived._id;
 		// delete bookReceived._userId;
+		delete bookReceived.rating;
 		const bookToPost = new Book ({
 			...bookReceived,
 			userId: req.auth.userId,
@@ -69,7 +72,7 @@ exports.postOneBook = async (req, res) => {
 // vérifier le userId reçu dans l'auth, s'il est bon, permettre l'ajout de la note
 // supprimer l'userId de la requête et ajouter celui reçu dans l'auth
 // Vérifier si la note est un nombre ET si comprise entre 0 et 5
-// Vérifier si le user a déjà noté
+// Vérifier si le user a déjà noté (si userId de la requete est déjà présent dans la base de donnée)
 // Mettre à jout la moyenne
 //
 // 	try {
