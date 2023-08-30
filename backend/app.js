@@ -2,13 +2,12 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 
-// const bodyParder = require('body-parser');
 const app = express();
 
 const authRoutes = require('./routes/authRoutes');
 const booksRoutes = require('./routes/booksRoutes');
 
-mongoose.connect(`mongodb+srv://${process.env.DBLOGIN}:${process.env.DBPASSWORD}@ocrp7database.to9hjtb.mongodb.net/?retryWrites=true&w=majority`,
+mongoose.connect(`mongodb+srv://${process.env.DBLOGIN}:${process.env.DBPASSWORD}@ocrp7database.to9hjtb.mongodb.net/OCRP7vieuxgrimoire?retryWrites=true&w=majority`,
 	{
 		useNewUrlParser: true,
 		useUnifiedTopology: true
@@ -17,7 +16,6 @@ mongoose.connect(`mongodb+srv://${process.env.DBLOGIN}:${process.env.DBPASSWORD}
 	.catch(() => console.log('Connexion à MongoDB échouée'));
 
 app.use(express.json());
-// app.use(bodyParder.json());
 
 // const cors = require('cors')
 // app.use(cors())
@@ -25,7 +23,7 @@ app.use(express.json());
 app.use((req, res, next) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
 	res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
 	next();
 });
 

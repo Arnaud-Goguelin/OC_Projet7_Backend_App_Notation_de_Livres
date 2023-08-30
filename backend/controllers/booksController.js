@@ -4,8 +4,6 @@ const fs = require('fs');
 exports.getAllBooks = async (req, res) => {
 	try {
 		const books = await Book.find();
-		console.log('getAllBooks OK');
-		// console.log(books);
 		return res.status(200).json(books);
 	} catch (error) {
 		return res.status(400).json({ error });
@@ -15,9 +13,6 @@ exports.getAllBooks = async (req, res) => {
 exports.getOneBook = async (req, res) => {
 	try {
 		const book = await Book.findOne({ _id: req.params.id });
-		// console.log(req.params.id);
-		console.log('getOneBook OK');
-		// console.log(book);
 		return res.status(200).json( book );
 	} catch (error) {
 		return res.status(400).json({ error });
@@ -27,8 +22,6 @@ exports.getOneBook = async (req, res) => {
 exports.getThreeBestBooks = async (req, res) => {
 	try {
 		const books = await Book.find();
-		console.log('getThreeBestBooks OK');
-		console.log(books);
 		const threeBestBooks = books
 			.sort( n => books[n+1].averageRating - books[n].averageRating )
 			.slice(0,3);
@@ -41,87 +34,109 @@ exports.getThreeBestBooks = async (req, res) => {
 exports.postOneBook = async (req, res) => {
 	try {
 		const bookReceived = JSON.parse(req.body.book);
-		// Pas besoin de supprimer les id, il n'y en a pas dans le corps de la requête
-		// delete bookReceived._id;
-		// delete bookReceived._userId;
-		delete bookReceived.rating;
 		const bookToPost = new Book ({
 			...bookReceived,
 			userId: req.auth.userId,
 			imageUrl : `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`
 		});
 		await bookToPost.save();
+		// console.log(bookToPost);
 		return res.status(201).json({message : 'Livre enregistré'});
 	} catch (error) {
 		return res.status(400).json({ error });
 	}
 };
 
-// exports.gradeOneBook = async (req, res) => {
-// Ennoncé:
-// Définit la note pour le user ID fourni.
-// La note doit être comprise entre 0 et 5.
-// L'ID de l'utilisateur et la note doivent être ajoutés au
-// tableau "rating" afin de ne pas laisser un utilisateur
-// noter deux fois le même livre.
-// Il n’est pas possible de modifier une note.
-// La note moyenne "averageRating" doit être tenue à
-// jour, et le livre renvoyé en réponse de la requête.
+exports.gradeOneBook = async (req, res) => {
+	try {
+		const gradeReceived = JSON.parse(req.body.rating);
+		console.log(gradeReceived);
+		const newGrade = {
+			userId: req.auth.userId,
+			grade: gradeReceived
+		};
+		// console.log(`gradeReceived = ${gradeReceived}`);
+		const bookToEvaluate = await Book.findOne({ _id: req.params.id });
+		// console.log(bookToEvaluate.ratings[0].userId);
+		// console.log(req.auth.userId);
+		console.log('gradeOneBook début OK');
 
-// TO DO:
-// vérifier le userId reçu dans l'auth, s'il est bon, permettre l'ajout de la note
-// supprimer l'userId de la requête et ajouter celui reçu dans l'auth
-// Vérifier si la note est un nombre ET si comprise entre 0 et 5
-// Vérifier si le user a déjà noté (si userId de la requete est déjà présent dans la base de donnée)
-// Mettre à jout la moyenne
-//
-// 	try {
-// 		const gradeReceived = JSON.parse(req.body.rating);
-// 		delete gradeReceived._userId;
+		if (bookToEvaluate.ratings.find(userId => userId === req.auth.userId) != undefined) {
+			return res.status(400).json({message: 'Il n\'est possible d\'évaluer un livre qu\'une seule fois'});
+		} else {
+			console.log('gradeOneBook condition userId passée');
+			if (0 < gradeReceived <= 5) {
+				console.log('gradeOneBook condition valeur note passée');
+				await Book.updateOne (
+					{ _id: req.params.id }, 
+					{ 
+						$push: { ratings: newGrade },
+						_id: req.params.id 
+					});
+				const bookToEvaluated = await Book.findOne({ _id: req.params.id });
+				const bookToEvaluatedGrades = bookToEvaluated.ratings.map(rating => rating.grade);
+				console.log(bookToEvaluatedGrades);
 
-// 	} catch (error) {
-// 		return res.status(401).json({ error });
-// 	}
+				const newAverageRating = (bookToEvaluatedGrades.reduce((accumulator, currentValue) => accumulator + currentValue, 0)) / bookToEvaluatedGrades.length;
+				console.log(newAverageRating);
+
+				await Book.updateOne(
+					{ _id: req.params.id }, 
+					{ 
+						$set: { averageRating: newAverageRating },
+						_id: req.params.id 
+					});
+				
+				const result = await Book.findOne({ _id: req.params.id });
+				console.log(result);
+				return res.status(200).json({ result });
+			} else {
+				return res.status(400).json({ message: 'La note doit être comprise en 0 et 5' });
+			}
+		}
+	} catch (error) {
+		return res.status(401).json({ error });
+	}
+};
+
+// exports.updateThing = (req, res, next) => {
+//     const thingObject = req.file ? {
+//         ...JSON.parse(req.body.thing),
+//         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+//     } : { ...req.body };
+
+//     delete thingObject._userId;
+//     Thing.findOne({ _id: req.params.id })
+//         .then((thing) => {
+//             if (thing.userId != req.auth.userId) {
+//                 res.status(401).json({ message: 'Non-autorisé' });
+//             } else {
+//                 Thing.updateOne({ _id: req.params.id }, { ...thingObject, _id: req.params.id })
+//                     .then(() => res.status(200).json({ message: 'Objet modifié' }))
+//                     .catch(error => res.status(401).json({ error }))
+//             }
+//         })
+//         .catch(error => res.status(400).json({ error }))
 // };
 
-// exports.updateThing = (req, res) => {
-// 	const thingObject = req.file ? {
-// 		...JSON.parse(req.body.thing),
-// 		imageUrl: `${req.protocol}://${req.get('host')}/imagessReceived/${req.file.filename}`
-// 	} : { ...req.body };
-
-// 	delete thingObject._userId;
-// 	Thing.findOne({ _id: req.params.id })
-// 		.then((thing) => {
-// 			if (thing.userId != req.auth.userId) {
-// 				res.status(401).json({ message: 'Non-autorisé' });
-// 			} else {
-// 				Thing.updateOne({ _id: req.params.id }, { ...thingObject, _id: req.params.id })
-// 					.then(() => res.status(200).json({ message: 'Objet modifié' }))
-// 					.catch(error => res.status(401).json({ error }));
-// 			}
-// 		})
-// 		.catch(error => res.status(400).json({ error }));
-// };
 
 
 exports.deleteOneBook = async (req, res) => {
 	try {
 		const bookToDelete = await Book.findOne({_id: req.params.id});
 		if (bookToDelete.userId != req.auth.userId) {
-			res.status(401).json({ message: 'Not authorized' });
+			res.status(401).json({ message: 'Utilisateur non autorisé' });
 		} else {
 			try {
 				const filename = bookToDelete.imageUrl.split('/imagesReceived/')[1];
-				fs.unlink(`imagesReceived/${filename}`), async () => {
+				fs.unlink(`imagesReceived/${filename}`,  async () => {
 					await Book.deleteOne({_id: req.params.id});
 					return res.status(200).json({ message: 'Livre supprimé'});
-				};
+				});
 			} catch (error) {
 				return res.status(401).json({ error });
 			}
 		}
-
 	} catch (error) {
 		return res.status(500).json({ error });
 	}
