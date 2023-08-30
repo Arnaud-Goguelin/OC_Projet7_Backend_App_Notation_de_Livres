@@ -81,8 +81,9 @@ exports.gradeOneBook = async (req, res) => {
 			}
 		);
 
-		const result = await Book.findOne({ _id: req.params.id });
-		return res.status(200).json({ result });
+		const bookEvaluated = await Book.findOne({ _id: req.params.id });
+		return res.status(200).json( bookEvaluated );
+		
 	} catch (error) {
 		return res.status(401).json({ error });
 	}
