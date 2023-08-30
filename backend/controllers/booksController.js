@@ -20,17 +20,15 @@ exports.getOneBook = async (req, res) => {
 };
 
 exports.getThreeBestBooks = async (req, res) => {
-	console.log('test');
 	try {
 		const books = await Book.find();
-		console.log(books);
-		console.log(books[1]);
-		const threeBestBooks = books
-			.sort( n => books[n+1].averageRating - books[n].averageRating )
-			.slice(0,3);
+		const sortedBooks = books.sort(function (bookA, bookB) {
+			return bookB.averageRating - bookA.averageRating;});
+			
+		const threeBestBooks = sortedBooks.slice(0,3);
 		return res.status(200).json( threeBestBooks );
 	} catch (error) {
-		return res.status(500).json({ message: 'au moins la route fonctionne' });
+		return res.status(400).json({ error });
 	}
 };
 

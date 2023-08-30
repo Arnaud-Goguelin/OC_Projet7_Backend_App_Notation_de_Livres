@@ -7,9 +7,9 @@ const booksController = require('../controllers/booksController');
 
 router.get('/', booksController.getAllBooks);
 
-router.get('/:id', booksController.getOneBook);
-
 router.get('/bestrating', booksController.getThreeBestBooks);
+
+router.get('/:id', booksController.getOneBook);
 
 router.post('/', auth, multer, booksController.postOneBook);
 
