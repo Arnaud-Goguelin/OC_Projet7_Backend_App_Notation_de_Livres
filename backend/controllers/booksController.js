@@ -20,24 +20,31 @@ exports.getOneBook = async (req, res) => {
 };
 
 exports.getThreeBestBooks = async (req, res) => {
+	console.log('test');
 	try {
 		const books = await Book.find();
+		console.log(books);
+		console.log(books[1]);
 		const threeBestBooks = books
 			.sort( n => books[n+1].averageRating - books[n].averageRating )
 			.slice(0,3);
 		return res.status(200).json( threeBestBooks );
 	} catch (error) {
-		return res.status(400).json({ error });
+		return res.status(500).json({ message: 'au moins la route fonctionne' });
 	}
 };
 
 exports.postOneBook = async (req, res) => {
 	try {
 		const bookReceived = JSON.parse(req.body.book);
+		delete bookReceived.ratings;
+		delete bookReceived.averageRating;
 		const bookToPost = new Book ({
 			...bookReceived,
 			userId: req.auth.userId,
-			imageUrl : `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`
+			imageUrl : `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`,
+			ratings: [],
+			averageRating: 0
 		});
 		await bookToPost.save();
 		return res.status(201).json({message : 'Livre enregistré'});
@@ -46,7 +53,7 @@ exports.postOneBook = async (req, res) => {
 	}
 };
 
-exports.gradeOneBook = async (req, res) => {
+exports.postGradeOneBook = async (req, res) => {
 	const gradeReceived = req.body.rating;
 
 	if (gradeReceived < 0 || gradeReceived > 5) {
@@ -70,7 +77,7 @@ exports.gradeOneBook = async (req, res) => {
 		allGrades.push(gradeReceived);
 		
 		const sumGrades = allGrades.reduce((somme, grade) => somme + grade, 0);
-		const newAverageRating = sumGrades / allGrades.length;
+		const newAverageRating = Math.round(sumGrades / allGrades.length);
 
 		await Book.updateOne(
 			{ _id: req.params.id }, 

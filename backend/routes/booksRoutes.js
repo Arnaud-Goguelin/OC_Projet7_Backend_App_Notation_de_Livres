@@ -9,11 +9,11 @@ router.get('/', booksController.getAllBooks);
 
 router.get('/:id', booksController.getOneBook);
 
-// router.get('/bestrating', booksController.getThreeBestBooks);
+router.get('/bestrating', booksController.getThreeBestBooks);
 
 router.post('/', auth, multer, booksController.postOneBook);
 
-router.post('/:id/rating', auth, booksController.gradeOneBook);
+router.post('/:id/rating', auth, booksController.postGradeOneBook);
 
 // router.put('/:id', auth, multer, booksController.updateOneBook);
 
