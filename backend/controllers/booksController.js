@@ -40,7 +40,6 @@ exports.postOneBook = async (req, res) => {
 			imageUrl : `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`
 		});
 		await bookToPost.save();
-		// console.log(bookToPost);
 		return res.status(201).json({message : 'Livre enregistré'});
 	} catch (error) {
 		return res.status(400).json({ error });
@@ -48,52 +47,42 @@ exports.postOneBook = async (req, res) => {
 };
 
 exports.gradeOneBook = async (req, res) => {
+	const gradeReceived = req.body.rating;
+
+	if (gradeReceived < 0 || gradeReceived > 5) {
+		return res.status(400).json({ error: 'La note doit être comprise en 0 et 5' });
+	}
+
+	const newGrade = {
+		userId: req.auth.userId,
+		grade: gradeReceived
+	};
+
 	try {
-		const gradeReceived = JSON.parse(req.body.rating);
-		console.log(gradeReceived);
-		const newGrade = {
-			userId: req.auth.userId,
-			grade: gradeReceived
-		};
-		// console.log(`gradeReceived = ${gradeReceived}`);
 		const bookToEvaluate = await Book.findOne({ _id: req.params.id });
-		// console.log(bookToEvaluate.ratings[0].userId);
-		// console.log(req.auth.userId);
-		console.log('gradeOneBook début OK');
 
-		if (bookToEvaluate.ratings.find(userId => userId === req.auth.userId) != undefined) {
+		const userGrade = bookToEvaluate.ratings.find(rating => rating.userId === req.auth.userId);
+		if (userGrade) {
 			return res.status(400).json({message: 'Il n\'est possible d\'évaluer un livre qu\'une seule fois'});
-		} else {
-			console.log('gradeOneBook condition userId passée');
-			if (0 < gradeReceived <= 5) {
-				console.log('gradeOneBook condition valeur note passée');
-				await Book.updateOne (
-					{ _id: req.params.id }, 
-					{ 
-						$push: { ratings: newGrade },
-						_id: req.params.id 
-					});
-				const bookToEvaluated = await Book.findOne({ _id: req.params.id });
-				const bookToEvaluatedGrades = bookToEvaluated.ratings.map(rating => rating.grade);
-				console.log(bookToEvaluatedGrades);
-
-				const newAverageRating = (bookToEvaluatedGrades.reduce((accumulator, currentValue) => accumulator + currentValue, 0)) / bookToEvaluatedGrades.length;
-				console.log(newAverageRating);
-
-				await Book.updateOne(
-					{ _id: req.params.id }, 
-					{ 
-						$set: { averageRating: newAverageRating },
-						_id: req.params.id 
-					});
-				
-				const result = await Book.findOne({ _id: req.params.id });
-				console.log(result);
-				return res.status(200).json({ result });
-			} else {
-				return res.status(400).json({ message: 'La note doit être comprise en 0 et 5' });
-			}
 		}
+		
+		const allGrades = bookToEvaluate.ratings.map(rating => rating.grade);
+		allGrades.push(gradeReceived);
+		
+		const sumGrades = allGrades.reduce((somme, grade) => somme + grade, 0);
+		const newAverageRating = sumGrades / allGrades.length;
+
+		await Book.updateOne(
+			{ _id: req.params.id }, 
+			{ 
+				$push: { ratings: newGrade },
+				$set: { averageRating: newAverageRating },
+				_id: req.params.id 
+			}
+		);
+
+		const result = await Book.findOne({ _id: req.params.id });
+		return res.status(200).json({ result });
 	} catch (error) {
 		return res.status(401).json({ error });
 	}
