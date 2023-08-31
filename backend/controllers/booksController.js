@@ -6,7 +6,7 @@ exports.getAllBooks = async (req, res) => {
 		const books = await Book.find();
 		return res.status(200).json(books);
 	} catch (error) {
-		return res.status(400).json({ error });
+		return res.status(400).json(error);
 	}
 };
 
@@ -15,7 +15,7 @@ exports.getOneBook = async (req, res) => {
 		const book = await Book.findOne({ _id: req.params.id });
 		return res.status(200).json( book );
 	} catch (error) {
-		return res.status(400).json({ error });
+		return res.status(400).json(error);
 	}
 };
 
@@ -28,7 +28,7 @@ exports.getThreeBestBooks = async (req, res) => {
 		const threeBestBooks = sortedBooks.slice(0,3);
 		return res.status(200).json( threeBestBooks );
 	} catch (error) {
-		return res.status(400).json({ error });
+		return res.status(400).json(error);
 	}
 };
 
@@ -47,7 +47,7 @@ exports.postOneBook = async (req, res) => {
 		await bookToPost.save();
 		return res.status(201).json({message : 'Livre enregistré'});
 	} catch (error) {
-		return res.status(400).json({ error });
+		return res.status(400).json(error);
 	}
 };
 
@@ -55,7 +55,7 @@ exports.postGradeOneBook = async (req, res) => {
 	const gradeReceived = req.body.rating;
 
 	if (gradeReceived < 0 || gradeReceived > 5) {
-		return res.status(400).json({ error: 'La note doit être comprise en 0 et 5' });
+		return res.status(400).json({ message: 'La note doit être comprise en 0 et 5' });
 	}
 
 	const newGrade = {
@@ -90,13 +90,14 @@ exports.postGradeOneBook = async (req, res) => {
 		return res.status(200).json( bookEvaluated );
 		
 	} catch (error) {
-		return res.status(401).json({ error });
+		return res.status(401).json(error);
 	}
 };
 
 exports.updateOneBook = async (req, res) => {
 	try {
 		let bookReceived = null;
+		console.log(req.file.buffer.filename);
 
 		if (req.file) {
 			bookReceived = 
@@ -137,10 +138,10 @@ exports.deleteOneBook = async (req, res) => {
 					return res.status(200).json({ message: 'Livre supprimé'});
 				});
 			} catch (error) {
-				return res.status(401).json({ error });
+				return res.status(401).json(error);
 			}
 		}
 	} catch (error) {
-		return res.status(500).json({ error });
+		return res.status(500).json(error);
 	}
 };

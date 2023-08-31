@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../midlewares/authMiddliware');
-const multer = require('../midlewares/multerMidleware');
+const auth = require('../middlewares/authMiddleware');
+const multer = require('../middlewares/multerMidleware');
+const sharp = require('../middlewares/sharpMiddleware');
 
 const booksController = require('../controllers/booksController');
 
@@ -11,11 +12,11 @@ router.get('/bestrating', booksController.getThreeBestBooks);
 
 router.get('/:id', booksController.getOneBook);
 
-router.post('/', auth, multer, booksController.postOneBook);
+router.post('/', auth, multer, sharp, booksController.postOneBook);
 
 router.post('/:id/rating', auth, booksController.postGradeOneBook);
 
-router.put('/:id', auth, multer, booksController.updateOneBook);
+router.put('/:id', auth, multer, sharp, booksController.updateOneBook);
 
 router.delete('/:id', auth, booksController.deleteOneBook);
 
