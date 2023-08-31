@@ -24,7 +24,7 @@ exports.getThreeBestBooks = async (req, res) => {
 		const books = await Book.find();
 		const sortedBooks = books.sort(function (bookA, bookB) {
 			return bookB.averageRating - bookA.averageRating;});
-			
+
 		const threeBestBooks = sortedBooks.slice(0,3);
 		return res.status(200).json( threeBestBooks );
 	} catch (error) {
@@ -94,27 +94,35 @@ exports.postGradeOneBook = async (req, res) => {
 	}
 };
 
-// exports.updateThing = (req, res, next) => {
-//     const thingObject = req.file ? {
-//         ...JSON.parse(req.body.thing),
-//         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-//     } : { ...req.body };
+exports.updateOneBook = async (req, res) => {
+	try {
+		let bookReceived = null;
 
-//     delete thingObject._userId;
-//     Thing.findOne({ _id: req.params.id })
-//         .then((thing) => {
-//             if (thing.userId != req.auth.userId) {
-//                 res.status(401).json({ message: 'Non-autorisé' });
-//             } else {
-//                 Thing.updateOne({ _id: req.params.id }, { ...thingObject, _id: req.params.id })
-//                     .then(() => res.status(200).json({ message: 'Objet modifié' }))
-//                     .catch(error => res.status(401).json({ error }))
-//             }
-//         })
-//         .catch(error => res.status(400).json({ error }))
-// };
+		if (req.file) {
+			bookReceived = 
+			{...JSON.parse(req.body.book),
+				imageUrl: `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`
+			};
+		} else {
+			bookReceived = { ...req.body };
+		}
 
+		delete bookReceived._userId;
+		const bookToUpdate = await Book.findOne({ _id: req.params.id });
+		if (bookToUpdate.userId != req.auth.userId) {return res.status(401).json({ message: 'Utilisateur(trice) non autorisé(e)' });}
 
+		await Book.updateOne(
+			{ _id: req.params.id },
+			{ ...bookReceived,
+				_id: req.params.id }
+		);
+	
+		return res.status(200).json({ message: 'Livre modifié '});
+		
+	} catch (error) {
+		return res.status(400).json({ message: 'au moins ma route fonctionne' });
+	}
+};
 
 exports.deleteOneBook = async (req, res) => {
 	try {

@@ -15,7 +15,7 @@ router.post('/', auth, multer, booksController.postOneBook);
 
 router.post('/:id/rating', auth, booksController.postGradeOneBook);
 
-// router.put('/:id', auth, multer, booksController.updateOneBook);
+router.put('/:id', auth, multer, booksController.updateOneBook);
 
 router.delete('/:id', auth, booksController.deleteOneBook);
 
