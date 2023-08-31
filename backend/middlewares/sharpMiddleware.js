@@ -11,29 +11,34 @@ const imageSize =  {
 };
 
 module.exports = (req, res, next) => {
-	const filename = req.file.originalname.split(' ').join('_');
+	try {
+		const filename = req.file.originalname.split(' ').join('_');
 
-	const filenameArray = filename.split('.');
-
-
-	filenameArray.pop();
-	const filenameWithoutExtention = filenameArray.join('.');
-
-	const uniqueFileName = filenameWithoutExtention + Date.now() + '.' + imageFormat;
-	const pathWhereToRegister = path.resolve(__dirname, '..', 'imagesReceived', uniqueFileName);
+		const filenameArray = filename.split('.');
 	
-	const imageReceived = req.file.buffer;
-
-	if (filenameArray[-1] === 'webp') {
-		sharp(imageReceived)
-			.resize(imageSize)
-			.toFile(pathWhereToRegister);
-		next();
-	} else {
-		sharp(imageReceived)
-			.resize(imageSize)
-			.toFormat(imageFormat)
-			.toFile(pathWhereToRegister);
-		next();
+	
+		filenameArray.pop();
+		const filenameWithoutExtention = filenameArray.join('.');
+	
+		const uniqueFileName = filenameWithoutExtention + Date.now() + '.' + imageFormat;
+		const pathWhereToRegister = path.resolve(__dirname, '..', 'imagesReceived', uniqueFileName);
+		
+		const imageReceived = req.file.buffer;
+	
+		if (filenameArray[-1] === 'webp') {
+			sharp(imageReceived)
+				.resize(imageSize)
+				.toFile(pathWhereToRegister);
+			next();
+		} else {
+			sharp(imageReceived)
+				.resize(imageSize)
+				.toFormat(imageFormat)
+				.toFile(pathWhereToRegister);
+			next();
+		}
+	
+	} catch (error) {
+		res.status(500).json({ error });
 	}
 };
