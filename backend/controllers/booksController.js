@@ -1,6 +1,16 @@
 const Book = require('../models/Book');
 const fs = require('fs');
 
+const imageFormat = 'webp';
+let newFileName = null;
+
+function defineNewFileName(req) {
+	const fileNameArray = req.file.filename.split('.');
+	fileNameArray.pop();
+	fileNameArray.push(imageFormat);
+	newFileName = fileNameArray.join('.');
+}
+
 exports.getAllBooks = async (req, res) => {
 	try {
 		const books = await Book.find();
@@ -37,10 +47,13 @@ exports.postOneBook = async (req, res) => {
 		const bookReceived = JSON.parse(req.body.book);
 		delete bookReceived.ratings;
 		delete bookReceived.averageRating;
+
+		defineNewFileName(req);
+
 		const bookToPost = new Book ({
 			...bookReceived,
 			userId: req.auth.userId,
-			imageUrl : `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`,
+			imageUrl : `${req.protocol}://${req.get('host')}/imagesReceived/converted${newFileName}`,
 			ratings: [],
 			averageRating: 0
 		});
@@ -97,12 +110,14 @@ exports.postGradeOneBook = async (req, res) => {
 exports.updateOneBook = async (req, res) => {
 	try {
 		let bookReceived = null;
-		console.log(req.file.buffer.filename);
 
 		if (req.file) {
+
+			defineNewFileName(req);
+
 			bookReceived = 
 			{...JSON.parse(req.body.book),
-				imageUrl: `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`
+				imageUrl: `${req.protocol}://${req.get('host')}/imagesReceived/converted${newFileName}`
 			};
 		} else {
 			bookReceived = { ...req.body };
@@ -132,8 +147,8 @@ exports.deleteOneBook = async (req, res) => {
 			res.status(401).json({ message: 'Utilisateur non autorisé' });
 		} else {
 			try {
-				const filename = bookToDelete.imageUrl.split('/imagesReceived/')[1];
-				fs.unlink(`imagesReceived/${filename}`,  async () => {
+				const fileToDelete = bookToDelete.imageUrl.split('/imagesReceived/')[1];
+				fs.unlink(`imagesReceived/${fileToDelete}`,  async () => {
 					await Book.deleteOne({_id: req.params.id});
 					return res.status(200).json({ message: 'Livre supprimé'});
 				});
