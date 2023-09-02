@@ -7,6 +7,7 @@ const app = express();
 
 const authRoutes = require('./routes/authRoutes');
 const booksRoutes = require('./routes/booksRoutes');
+// const limiter = require('./middlewares/expressRateLimitMiddleware');
 
 mongoose.connect(`mongodb+srv://${process.env.DBLOGIN}:${process.env.DBPASSWORD}@ocrp7database.to9hjtb.mongodb.net/OCRP7vieuxgrimoire?retryWrites=true&w=majority`,
 	{
@@ -32,6 +33,9 @@ app.use(helmet({
 	crossOriginResourcePolicy: false,
 }));
 
+const ERL = require('./middlewares/expressRateLimitMiddleware');
+
+app.use(ERL.limiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/books', booksRoutes);
 app.use('/imagesReceived', express.static(path.join(__dirname, 'imagesReceived')));

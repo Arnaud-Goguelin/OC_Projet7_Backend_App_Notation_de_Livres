@@ -3,7 +3,6 @@ const path = require('path');
 const fs = require('fs');
 
 const imageFormat = 'webp';
-// exports.imageFormat;
 
 const imageSize =  {
 	width: 206,
@@ -21,7 +20,7 @@ function deleteOldFile(req) {
 	fs.unlink(pahtToFileToDelete, () => console.log('fichier supprimé') );
 }
 
-module.exports = (req, res, next) => {
+function sharpImage(req, res, next) {
 	try {
 		const imageToConvert = path.resolve(__dirname, '..', 'imagesReceived', req.file.filename);
 		// `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`;
@@ -52,4 +51,6 @@ module.exports = (req, res, next) => {
 	} catch (error) {
 		res.status(500).json( error );
 	}
-};
+}
+
+module.exports = { imageFormat , sharpImage };

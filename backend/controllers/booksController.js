@@ -1,13 +1,13 @@
 const Book = require('../models/Book');
 const fs = require('fs');
 
-const imageFormat = 'webp';
+const sharp = require('../middlewares/sharpMiddleware');
 let newFileName = null;
 
 function defineNewFileName(req) {
 	const fileNameArray = req.file.filename.split('.');
 	fileNameArray.pop();
-	fileNameArray.push(imageFormat);
+	fileNameArray.push(sharp.imageFormat);
 	newFileName = fileNameArray.join('.');
 }
 

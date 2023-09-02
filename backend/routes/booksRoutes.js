@@ -12,11 +12,11 @@ router.get('/bestrating', booksController.getThreeBestBooks);
 
 router.get('/:id', booksController.getOneBook);
 
-router.post('/', auth, multer, sharp, booksController.postOneBook);
+router.post('/', auth, multer, sharp.sharpImage, booksController.postOneBook);
 
 router.post('/:id/rating', auth, booksController.postGradeOneBook);
 
-router.put('/:id', auth, multer, sharp, booksController.updateOneBook);
+router.put('/:id', auth, multer, sharp.sharpImage, booksController.updateOneBook);
 
 router.delete('/:id', auth, booksController.deleteOneBook);
 
