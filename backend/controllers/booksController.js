@@ -58,6 +58,7 @@ exports.postOneBook = async (req, res) => {
 			averageRating: 0
 		});
 		await bookToPost.save();
+		await fs.unlink((`imagesReceived/${req.file.filename}`), () => console.log('fichier supprimé') );
 		return res.status(201).json({message : 'Livre enregistré'});
 	} catch (error) {
 		return res.status(400).json(error);
@@ -132,7 +133,7 @@ exports.updateOneBook = async (req, res) => {
 			{ ...bookReceived,
 				_id: req.params.id }
 		);
-	
+		await fs.unlink((`imagesReceived/${req.file.filename}`), () => console.log('fichier supprimé') );
 		return res.status(200).json({ message: 'Livre modifié '});
 		
 	} catch (error) {

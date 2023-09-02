@@ -1,6 +1,5 @@
 const sharp = require('sharp');
 const path = require('path');
-const fs = require('fs');
 
 const imageFormat = 'webp';
 
@@ -8,22 +7,16 @@ const imageSize =  {
 	width: 206,
 	height: 260,
 	fit: 'cover',
-	withoutEnlargement: true,
+	withoutEnlargement: false,
 };
-
-function deleteOldFile(req) {
-	// const URL = `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`;
-	// console.log(req.file.filename);
-	// const fileToDelete = decodeURIComponent(URL.split('/imagesReceived/')[1]);
-	// console.log(fileToDelete);
-	const pahtToFileToDelete = path.resolve(__dirname, '..', 'imagesReceived', req.file.filename);
-	fs.unlink(pahtToFileToDelete, () => console.log('fichier supprimé') );
-}
 
 function sharpImage(req, res, next) {
 	try {
 		const imageToConvert = path.resolve(__dirname, '..', 'imagesReceived', req.file.filename);
-		// `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`;
+		// const imageToConvert2 = `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`;
+
+		console.log(imageToConvert);
+		// console.log(imageToConvert2)
 
 		const fileName = req.file.filename.split(' ').join('_');
 		const fileNameArray = fileName.split('.');
@@ -37,14 +30,12 @@ function sharpImage(req, res, next) {
 			sharp(imageToConvert)
 				.resize(imageSize)
 				.toFile(pathWhereToRegister);
-			// deleteOldFile(req);
 			next();
 		} else {
 			sharp(imageToConvert)
 				.resize(imageSize)
 				.toFormat(imageFormat)
 				.toFile(pathWhereToRegister);
-			// deleteOldFile(req);
 			next();
 		}
 	
