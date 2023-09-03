@@ -7,7 +7,6 @@ const app = express();
 
 const authRoutes = require('./routes/authRoutes');
 const booksRoutes = require('./routes/booksRoutes');
-// const limiter = require('./middlewares/expressRateLimitMiddleware');
 
 mongoose.connect(`mongodb+srv://${process.env.DBLOGIN}:${process.env.DBPASSWORD}@ocrp7database.to9hjtb.mongodb.net/OCRP7vieuxgrimoire?retryWrites=true&w=majority`,
 	{
