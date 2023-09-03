@@ -6,7 +6,7 @@ const limiter = rateLimit({
 	standardHeaders: 'draft-7', 
 	legacyHeaders: false,
 	statusCode: 429,
-	message: '15 requêtes par 15 minutes maximum. Patientez 15 minutes',
+	message: '100 requêtes par heure maximum. Patientez 1 heure',
 });
 
 const createAccountLimiter = rateLimit({
@@ -15,7 +15,7 @@ const createAccountLimiter = rateLimit({
 	standardHeaders: 'draft-7',
 	legacyHeaders: false,
 	statusCode: 429,
-	message: '3 comptes créées par heure maximum. Patientez 1 heure.',
+	message: '3 comptes créés par heure maximum. Patientez 1 heure.',
 });
 
 module.exports = { limiter, createAccountLimiter };
