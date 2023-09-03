@@ -1,5 +1,5 @@
 const sharp = require('sharp');
-const path = require('path');
+const fs = require('fs');
 
 const imageFormat = 'webp';
 
@@ -10,37 +10,40 @@ const imageSize =  {
 	withoutEnlargement: false,
 };
 
-function sharpImage(req, res, next) {
+function deleteOldFile(fileToDelete) {
+	fs.unlink((`imagesReceived/${fileToDelete}`), () => console.log('fichier supprimé') );
+}
+
+async function sharpImage(req, res, next) {
 	try {
-		const imageToConvert = path.resolve(__dirname, '..', 'imagesReceived', req.file.filename);
-		// const imageToConvert2 = `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`;
 
-		console.log(imageToConvert);
-		// console.log(imageToConvert2)
+		const fileNameArray = req.file.originalname.split('.');
+		const fileNameWithoutExtention = fileNameArray[0];
 
-		const fileName = req.file.filename.split(' ').join('_');
-		const fileNameArray = fileName.split('.');
-		fileNameArray.pop();
-		const filenameWithoutExtention = fileNameArray[0];
-
-		const uniqueFileName = 'converted' + filenameWithoutExtention + '.' + imageFormat;
-		const pathWhereToRegister = path.resolve(__dirname, '..', 'imagesReceived', uniqueFileName);
-
+		const uniqueFileName = fileNameWithoutExtention + Date.now() + '.' + imageFormat;
+		const pathWhereToRegister = `imagesReceived/${uniqueFileName}`;
+		
+		req.file.filename = uniqueFileName;
+ 
 		if (fileNameArray[-1] === imageFormat) {
-			sharp(imageToConvert)
+			await sharp(req.file.buffer)
 				.resize(imageSize)
 				.toFile(pathWhereToRegister);
+			
+			await deleteOldFile(req.file.originalname);
 			next();
 		} else {
-			sharp(imageToConvert)
+			await sharp(req.file.buffer)
 				.resize(imageSize)
 				.toFormat(imageFormat)
 				.toFile(pathWhereToRegister);
+			
+			await deleteOldFile(req.file.originalname);
 			next();
 		}
 	
 	} catch (error) {
-		res.status(500).json( error );
+		res.status(500).json(error);
 	}
 }
 

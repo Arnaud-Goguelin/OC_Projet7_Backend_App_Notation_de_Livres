@@ -1,16 +1,6 @@
 const Book = require('../models/Book');
 const fs = require('fs');
 
-const sharp = require('../middlewares/sharpMiddleware');
-let newFileName = null;
-
-function defineNewFileName(req) {
-	const fileNameArray = req.file.filename.split('.');
-	fileNameArray.pop();
-	fileNameArray.push(sharp.imageFormat);
-	newFileName = fileNameArray.join('.');
-}
-
 exports.getAllBooks = async (req, res) => {
 	try {
 		const books = await Book.find();
@@ -25,7 +15,7 @@ exports.getOneBook = async (req, res) => {
 		const book = await Book.findOne({ _id: req.params.id });
 		return res.status(200).json( book );
 	} catch (error) {
-		return res.status(400).json(error);
+		return res.status(400).json( error );
 	}
 };
 
@@ -38,7 +28,7 @@ exports.getThreeBestBooks = async (req, res) => {
 		const threeBestBooks = sortedBooks.slice(0,3);
 		return res.status(200).json( threeBestBooks );
 	} catch (error) {
-		return res.status(400).json(error);
+		return res.status(400).json( error );
 	}
 };
 
@@ -48,20 +38,19 @@ exports.postOneBook = async (req, res) => {
 		delete bookReceived.ratings;
 		delete bookReceived.averageRating;
 
-		defineNewFileName(req);
-
 		const bookToPost = new Book ({
 			...bookReceived,
 			userId: req.auth.userId,
-			imageUrl : `${req.protocol}://${req.get('host')}/imagesReceived/converted${newFileName}`,
+			imageUrl : `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`,
 			ratings: [],
 			averageRating: 0
 		});
+
 		await bookToPost.save();
-		await fs.unlink((`imagesReceived/${req.file.filename}`), () => console.log('fichier supprimé') );
-		return res.status(201).json({message : 'Livre enregistré'});
+
+		return res.status(201).json({ message : 'Livre enregistré' });
 	} catch (error) {
-		return res.status(400).json(error);
+		return res.status(400).json( error );
 	}
 };
 
@@ -104,7 +93,7 @@ exports.postGradeOneBook = async (req, res) => {
 		return res.status(200).json( bookEvaluated );
 		
 	} catch (error) {
-		return res.status(401).json(error);
+		return res.status(401).json( error );
 	}
 };
 
@@ -114,11 +103,9 @@ exports.updateOneBook = async (req, res) => {
 
 		if (req.file) {
 
-			defineNewFileName(req);
-
 			bookReceived = 
 			{...JSON.parse(req.body.book),
-				imageUrl: `${req.protocol}://${req.get('host')}/imagesReceived/converted${newFileName}`
+				imageUrl: `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`
 			};
 		} else {
 			bookReceived = { ...req.body };
@@ -133,11 +120,11 @@ exports.updateOneBook = async (req, res) => {
 			{ ...bookReceived,
 				_id: req.params.id }
 		);
-		await fs.unlink((`imagesReceived/${req.file.filename}`), () => console.log('fichier supprimé') );
+
 		return res.status(200).json({ message: 'Livre modifié '});
 		
 	} catch (error) {
-		return res.status(400).json({ message: 'au moins ma route fonctionne' });
+		return res.status(400).json( error );
 	}
 };
 
@@ -154,10 +141,10 @@ exports.deleteOneBook = async (req, res) => {
 					return res.status(200).json({ message: 'Livre supprimé'});
 				});
 			} catch (error) {
-				return res.status(401).json(error);
+				return res.status(401).json( error );
 			}
 		}
 	} catch (error) {
-		return res.status(500).json(error);
+		return res.status(500).json( error );
 	}
 };
