@@ -14,7 +14,7 @@ function deleteOldFile(fileToDelete) {
 	fs.unlink((`imagesReceived/${fileToDelete}`), () => console.log('fichier supprimé') );
 }
 
-async function sharpImage(req, res, next) {
+exports.sharpImage = async(req, res, next) => {
 	try {
 
 		const fileNameArray = req.file.originalname.split('.');
@@ -45,6 +45,4 @@ async function sharpImage(req, res, next) {
 	} catch (error) {
 		res.status(500).json(error);
 	}
-}
-
-module.exports = { imageFormat , sharpImage };
+};
