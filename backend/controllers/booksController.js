@@ -112,13 +112,20 @@ exports.updateOneBook = async (req, res) => {
 		}
 
 		delete bookReceived._userId;
-		const bookToUpdate = await Book.findOne({ _id: req.params.id });
-		if (bookToUpdate.userId != req.auth.userId) {return res.status(401).json({ message: 'Utilisateur(trice) non autorisé(e)' });}
 
-		await Book.updateOne(
-			{ _id: req.params.id },
-			{ ...bookReceived,
-				_id: req.params.id }
+		const bookToUpdate = await Book.findOne({ _id: req.params.id });
+		
+		if (bookToUpdate.userId != req.auth.userId) {
+			return res.status(401).json({ message: 'Utilisateur(trice) non autorisé(e)' });
+		}
+		
+		const fileToDelete = bookToUpdate.imageUrl.split('/imagesReceived/')[1];
+		fs.unlink((`imagesReceived/${fileToDelete}`), async () => {
+			await Book.updateOne(
+				{ _id: req.params.id },
+				{ ...bookReceived,
+					_id: req.params.id }
+			);}
 		);
 
 		return res.status(200).json({ message: 'Livre modifié '});
@@ -132,7 +139,7 @@ exports.deleteOneBook = async (req, res) => {
 	try {
 		const bookToDelete = await Book.findOne({_id: req.params.id});
 		if (bookToDelete.userId != req.auth.userId) {
-			res.status(401).json({ message: 'Utilisateur non autorisé' });
+			res.status(401).json({ message: 'Utilisateur(trice) non autorisé(e)' });
 		} else {
 			try {
 				const fileToDelete = bookToDelete.imageUrl.split('/imagesReceived/')[1];

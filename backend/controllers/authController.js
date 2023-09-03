@@ -16,8 +16,8 @@ exports.signup = async (req, res) => {
 		};
 		await User.create(user);
 		return res.status(201).json({ message: 'Utilisateur créé' });
-	}catch (err){
-		return res.status(500).json({ message: err.message });
+	}catch (error){
+		return res.status(500).json({ error });
 	}
 
 };

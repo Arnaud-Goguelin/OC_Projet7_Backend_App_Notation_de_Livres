@@ -10,11 +10,7 @@ const imageSize =  {
 	withoutEnlargement: false,
 };
 
-function deleteOldFile(fileToDelete) {
-	fs.unlink((`imagesReceived/${fileToDelete}`), () => console.log('fichier supprimé') );
-}
-
-exports.sharpImage = async(req, res, next) => {
+exports.sharpImage = async (req, res, next) => {
 	try {
 
 		const fileNameArray = req.file.originalname.split('.');
@@ -30,7 +26,6 @@ exports.sharpImage = async(req, res, next) => {
 				.resize(imageSize)
 				.toFile(pathWhereToRegister);
 			
-			await deleteOldFile(req.file.originalname);
 			next();
 		} else {
 			await sharp(req.file.buffer)
@@ -38,7 +33,6 @@ exports.sharpImage = async(req, res, next) => {
 				.toFormat(imageFormat)
 				.toFile(pathWhereToRegister);
 			
-			await deleteOldFile(req.file.originalname);
 			next();
 		}
 	
