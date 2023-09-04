@@ -6,7 +6,7 @@ exports.getAllBooks = async (req, res) => {
 		const books = await Book.find();
 		return res.status(200).json(books);
 	} catch (error) {
-		return res.status(400).json(error);
+		return res.status(400).json({ error });
 	}
 };
 
@@ -15,7 +15,7 @@ exports.getOneBook = async (req, res) => {
 		const book = await Book.findOne({ _id: req.params.id });
 		return res.status(200).json( book );
 	} catch (error) {
-		return res.status(400).json( error );
+		return res.status(400).json({ error });
 	}
 };
 
@@ -28,7 +28,7 @@ exports.getThreeBestBooks = async (req, res) => {
 		const threeBestBooks = sortedBooks.slice(0,3);
 		return res.status(200).json( threeBestBooks );
 	} catch (error) {
-		return res.status(400).json( error );
+		return res.status(400).json({ error });
 	}
 };
 
@@ -50,7 +50,7 @@ exports.postOneBook = async (req, res) => {
 
 		return res.status(201).json({ message : 'Livre enregistré' });
 	} catch (error) {
-		return res.status(400).json( error );
+		return res.status(400).json({ error });
 	}
 };
 
@@ -93,45 +93,45 @@ exports.postGradeOneBook = async (req, res) => {
 		return res.status(200).json( bookEvaluated );
 		
 	} catch (error) {
-		return res.status(401).json( error );
+		return res.status(401).json({ error });
 	}
 };
 
 exports.updateOneBook = async (req, res) => {
 	try {
 		let bookReceived = null;
+		const bookToUpdate = await Book.findOne({ _id: req.params.id });
 
-		if (req.file) {
+		if (bookToUpdate.userId != req.auth.userId) {
+			return res.status(401).json({ message: 'Utilisateur(trice) non autorisé(e)' });
+		}
 
+		if (!req.file) {
+			bookReceived = { ...req.body };
+			console.log(bookReceived);
+		} else {
 			bookReceived = 
 			{...JSON.parse(req.body.book),
 				imageUrl: `${req.protocol}://${req.get('host')}/imagesReceived/${req.file.filename}`
 			};
-		} else {
-			bookReceived = { ...req.body };
+			const fileToDelete = bookToUpdate.imageUrl.split('/imagesReceived/')[1];
+			fs.unlink(`imagesReceived/${fileToDelete}`, () => { console.log('fichier supprimé');});
 		}
 
 		delete bookReceived._userId;
+		console.log(bookToUpdate._id);
+		console.log(req.params.id);
 
-		const bookToUpdate = await Book.findOne({ _id: req.params.id });
-		
-		if (bookToUpdate.userId != req.auth.userId) {
-			return res.status(401).json({ message: 'Utilisateur(trice) non autorisé(e)' });
-		}
-		
-		const fileToDelete = bookToUpdate.imageUrl.split('/imagesReceived/')[1];
-		fs.unlink((`imagesReceived/${fileToDelete}`), async () => {
-			await Book.updateOne(
-				{ _id: req.params.id },
-				{ ...bookReceived,
-					_id: req.params.id }
-			);}
+		await Book.updateOne(
+			{ _id: req.params.id },
+			{ ...bookReceived,
+				_id: req.params.id }
 		);
 
 		return res.status(200).json({ message: 'Livre modifié '});
 		
 	} catch (error) {
-		return res.status(400).json( error );
+		return res.status(400).json({ error });
 	}
 };
 
@@ -148,10 +148,10 @@ exports.deleteOneBook = async (req, res) => {
 					return res.status(200).json({ message: 'Livre supprimé'});
 				});
 			} catch (error) {
-				return res.status(401).json( error );
+				return res.status(401).json({ error });
 			}
 		}
 	} catch (error) {
-		return res.status(500).json( error );
+		return res.status(500).json({ error });
 	}
 };

@@ -1,5 +1,4 @@
 const sharp = require('sharp');
-const fs = require('fs');
 
 const imageFormat = 'webp';
 
@@ -12,6 +11,7 @@ const imageSize =  {
 
 exports.sharpImage = async (req, res, next) => {
 	try {
+		if(!req.file) { return next(); }
 
 		const fileNameArray = req.file.originalname.split('.');
 		const fileNameWithoutExtention = fileNameArray[0];
@@ -26,17 +26,17 @@ exports.sharpImage = async (req, res, next) => {
 				.resize(imageSize)
 				.toFile(pathWhereToRegister);
 			
-			next();
+			return next();
 		} else {
 			await sharp(req.file.buffer)
 				.resize(imageSize)
 				.toFormat(imageFormat)
 				.toFile(pathWhereToRegister);
 			
-			next();
+			return next();
 		}
 	
 	} catch (error) {
-		res.status(500).json(error);
+		res.status(500).json({ error });
 	}
 };
