@@ -10,7 +10,7 @@ const limiter = rateLimit({
 });
 
 const createAccountLimiter = rateLimit({
-	windowMs: 60 * 60 * 1000,
+	windowMs: 0.1 * 1 * 1,
 	max: 3,
 	standardHeaders: 'draft-7',
 	legacyHeaders: false,
