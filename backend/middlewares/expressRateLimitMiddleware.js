@@ -1,16 +1,16 @@
 const { rateLimit } = require('express-rate-limit');
 
 const limiter = rateLimit({
-	windowMs: 60 * 60 * 1000,
-	max: 100,
+	windowMs: 15 * 60 * 1000,
+	max: 1000,
 	standardHeaders: 'draft-7', 
 	legacyHeaders: false,
 	statusCode: 429,
-	message: '100 requêtes par heure maximum. Patientez 1 heure',
+	message: '50 requêtes maximum par intervalle de 15 minutes. Patientez 15 minuites',
 });
 
 const createAccountLimiter = rateLimit({
-	windowMs: 0.1 * 1 * 1,
+	windowMs: 60 * 60 * 1000,
 	max: 3,
 	standardHeaders: 'draft-7',
 	legacyHeaders: false,

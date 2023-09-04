@@ -7,8 +7,8 @@ const crypto = require('../middlewares/nodeCryptoMiddleware');
 
 const authController = require('../controllers/authController');
 
-router.post('/signup', ERL.createAccountLimiter, PWV.validateLogins, crypto.encryptEmail, authController.signup);
+router.post('/signup', ERL.createAccountLimiter, PWV.validateLogins, crypto.secureDatas, authController.signup);
 
-router.post('/login', authController.login);
+router.post('/login', ERL.limiter, crypto.decryptData, authController.login);
 
 module.exports = router;
