@@ -1,6 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
+
 const helmet = require('helmet');
+const perfectExpressSanitizer = require('perfect-express-sanitizer');
+const ERL = require('./middlewares/expressRateLimitMiddleware');
+
 const path = require('path');
 
 const app = express();
@@ -17,6 +21,9 @@ mongoose.connect(`mongodb+srv://${process.env.DBLOGIN}:${process.env.DBPASSWORD}
 	.catch(() => console.log('Connexion à MongoDB échouée'));
 
 app.use(express.json());
+app.use(helmet({
+	crossOriginResourcePolicy: false,
+}));
 
 // const cors = require('cors')
 // app.use(cors())
@@ -28,11 +35,13 @@ app.use((req, res, next) => {
 	next();
 });
 
-app.use(helmet({
-	crossOriginResourcePolicy: false,
+app.use(perfectExpressSanitizer.clean({
+	xss: true,
+	noSql: true,
+	sql: false,
+	level: 5,
+	forbiddenTags: [ '.execute', '\'\'', '--', '<script>', 'ls -la', /\d=\d/gm ],
 }));
-
-const ERL = require('./middlewares/expressRateLimitMiddleware');
 
 app.use(ERL.limiter);
 app.use('/api/auth', authRoutes);
