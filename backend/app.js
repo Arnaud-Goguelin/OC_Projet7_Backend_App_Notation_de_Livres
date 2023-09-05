@@ -2,7 +2,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const helmet = require('helmet');
-const perfectExpressSanitizer = require('perfect-express-sanitizer');
 const ERL = require('./middlewares/expressRateLimitMiddleware');
 
 const path = require('path');
@@ -34,14 +33,6 @@ app.use((req, res, next) => {
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 	next();
 });
-
-app.use(perfectExpressSanitizer.clean({
-	xss: true,
-	noSql: true,
-	sql: false,
-	level: 5,
-	forbiddenTags: [ '.execute', '\'\'', '--', '<script>', 'ls -la', /\d=\d/gm ],
-}));
 
 app.use(ERL.limiter);
 app.use('/api/auth', authRoutes);

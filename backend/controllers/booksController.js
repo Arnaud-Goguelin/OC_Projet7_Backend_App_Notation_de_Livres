@@ -108,7 +108,6 @@ exports.updateOneBook = async (req, res) => {
 
 		if (!req.file) {
 			bookReceived = { ...req.body };
-			console.log(bookReceived);
 		} else {
 			bookReceived = 
 			{...JSON.parse(req.body.book),
@@ -119,8 +118,6 @@ exports.updateOneBook = async (req, res) => {
 		}
 
 		delete bookReceived._userId;
-		console.log(bookToUpdate._id);
-		console.log(req.params.id);
 
 		await Book.updateOne(
 			{ _id: req.params.id },
