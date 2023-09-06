@@ -9,6 +9,6 @@ const authController = require('../controllers/authController');
 
 router.post('/signup', PES.sanitizer, ERL.createAccountLimiter, PWV.validateLogins, authController.signup);
 
-router.post('/login', PES.sanitizer, ERL.limiter, authController.login);
+router.post('/login', PES.sanitizer, authController.login);
 
 module.exports = router;
