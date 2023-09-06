@@ -1,0 +1,14 @@
+-- server.js --
+PORT = port utilisé de préférence et sur lequel le server écoute les requêtes.
+
+-- app.js --
+DBLOGIN = identifiant de la base de données MongoDB.
+DBPASSWORD = mot de passe de la base de données MongoDB.
+
+-- Dossier Controllers : authController.js et authMiddleware.js --
+JWTKEY = clef aléatoire de 256 bits.
+
+-- Dosser utils : secureDatas.js --
+CRYPTOPASSWORD = clef aléatoire de 256 bits.
+ALGORITHM = algorithme de chiffrage choisi : aes-256-cbc .
+IV = chaîne de 16 caractères choisis aléatoirement (longueur spécifique à l'algorithme de chiffrage choisi).
