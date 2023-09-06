@@ -138,15 +138,11 @@ exports.deleteOneBook = async (req, res) => {
 		if (bookToDelete.userId != req.auth.userId) {
 			res.status(401).json({ message: 'Utilisateur(trice) non autorisé(e)' });
 		} else {
-			try {
-				const fileToDelete = bookToDelete.imageUrl.split('/imagesReceived/')[1];
-				fs.unlink(`imagesReceived/${fileToDelete}`,  async () => {
-					await Book.deleteOne({_id: req.params.id});
-					return res.status(200).json({ message: 'Livre supprimé'});
-				});
-			} catch (error) {
-				return res.status(401).json({ error });
-			}
+			const fileToDelete = bookToDelete.imageUrl.split('/imagesReceived/')[1];
+			fs.unlink(`imagesReceived/${fileToDelete}`,  async () => {
+				await Book.deleteOne({_id: req.params.id});
+				return res.status(200).json({ message: 'Livre supprimé'});
+			});
 		}
 	} catch (error) {
 		return res.status(500).json({ error });
