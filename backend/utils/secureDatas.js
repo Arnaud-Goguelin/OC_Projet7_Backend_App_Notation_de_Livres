@@ -1,16 +1,10 @@
 const crypto = require('crypto');
-const bcrypt = require('bcrypt');
 
 const key = crypto
 	.createHash('sha512')
 	.update(process.env.CRYPTOPASSWORD)
 	.digest('hex')
 	.substring(0, 32);
-
-exports.hashData = async (dataToHash) => {
-	const hash = await bcrypt.hash(dataToHash, 10);
-	return hash;
-};
 
 exports.encryptData = (dataToEncrypt) => {
 	try {

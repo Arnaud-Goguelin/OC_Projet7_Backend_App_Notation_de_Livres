@@ -11,7 +11,7 @@ exports.signup = async (req, res) => {
 			});
 		}
 
-		const hashedPassword = await secureDatas.hashData(req.body.password);
+		const hashedPassword = await bcrypt.hash(req.body.password, 10);
 		const encryptedEmail = secureDatas.encryptData(req.body.email);
 
 		const user = {
