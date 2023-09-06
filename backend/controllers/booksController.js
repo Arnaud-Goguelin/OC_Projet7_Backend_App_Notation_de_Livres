@@ -55,18 +55,18 @@ exports.postOneBook = async (req, res) => {
 };
 
 exports.postGradeOneBook = async (req, res) => {
-	const gradeReceived = req.body.rating;
-
-	if (gradeReceived < 0 || gradeReceived > 5) {
-		return res.status(400).json({ message: 'La note doit être comprise en 0 et 5' });
-	}
-
-	const newGrade = {
-		userId: req.auth.userId,
-		grade: gradeReceived
-	};
-
 	try {
+		const gradeReceived = req.body.rating;
+
+		if (gradeReceived < 0 || gradeReceived > 5) {
+			return res.status(400).json({ message: 'La note doit être comprise en 0 et 5' });
+		}
+
+		const newGrade = {
+			userId: req.auth.userId,
+			grade: gradeReceived
+		};
+	
 		const bookToEvaluate = await Book.findOne({ _id: req.params.id });
 
 		const userGrade = bookToEvaluate.ratings.find(rating => rating.userId === req.auth.userId);
