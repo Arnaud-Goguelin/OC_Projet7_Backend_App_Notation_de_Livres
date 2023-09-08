@@ -58,32 +58,3 @@ exports.login = async (req, res) => {
 		error => res.status(500).json({ error });
 	}
 };
-
-// let userToFind = null;
-// for (let user of req.body.decryptedDatas) { if (user.email === req.body.email) {
-// 	userToFind = user;
-// 	break;
-// }}
-
-// if (userToFind === null) {
-// 	res.status(401).json({ message: 'Identifiant ou mot de passe incorrect(s)' });
-// }
-		
-// const hasComparison = await	bcrypt.compare(req.body.password, userToFind.password);
-
-// if (hasComparison === false) {
-// 	res.status(401).json({ message: 'Identifiant ou mot de passe incorrect(s)' });
-// } else {
-// 	try {
-// 		res.status(200).json({
-// 			userId: userToFind._id,
-// 			token: JWT.sign(
-// 				{ userId: userToFind._id },
-// 				process.env.JWTKEY,
-// 				{ expiresIn: '24h' }
-// 			)
-// 		});
-// 	} catch (error) {
-// 		error => res.status(500).json({ error });
-// 	}
-// }

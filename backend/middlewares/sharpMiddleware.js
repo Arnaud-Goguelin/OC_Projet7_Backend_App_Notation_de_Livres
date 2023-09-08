@@ -17,7 +17,7 @@ exports.sharpImage = async (req, res, next) => {
 		
 		const metadata = await sharp(req.file.buffer).metadata();
 		if(existingImageFormat.includes(metadata.format) === false) {
-			res.status(500).json({ message: 'Le format de l\'image n\'est pas accepté. Utilisez une image au format jpg, jpeg, png, webp ou avif'});
+			return res.status(500).json({ message: 'Le format de l\'image n\'est pas accepté. Utilisez une image au format jpg, jpeg, png, webp ou avif'});
 		}
 
 		const fileNameArray = req.file.originalname.split('.');
