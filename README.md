@@ -3,10 +3,12 @@ Organisme de Formation: Openclassrooms
 
 ### Projet 7 : Développez le back-end en Node.JS d'un site de notation de livres
 **Projet validé**
+[Site deployé](https://p7vieuxgrimoirefrontenddeployed.pages.dev/)
 
 ### Consignes du projet:
   - Lien vers les spécificités fonctionnelles de l'API: [Spécificités_API_MonVieuxGrimoire](https://course.oc-static.com/projects/D%C3%A9veloppeur+Web/DW_P7+Back-end/DW+P7+Back-end+-+Specifications+API.pdf)
   - Optimiser les images qui seront envoyées par les utilisateurs pour respecter les bonnes pratiques du Green Code.
+  - Lien vers le code front-end: [Dpôt_GitHub_Frontend](https://github.com/OpenClassrooms-Student-Center/P7-Dev-Web-livres)
     
 ### Compétences évaluées et commentaires associés:
 1. Implémenter un modèle logique de données conformément à la réglementation **Validé**
